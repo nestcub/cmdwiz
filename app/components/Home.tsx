@@ -1,179 +1,225 @@
+'use client';
+
 import React from 'react';
-import { User, Trophy, Target, BookOpen, LogIn, UserPlus } from 'lucide-react';
+import Link from 'next/link';
+import { SignedIn, SignedOut, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
+import Icon from './ui/Icon';
+import GradientButton from './ui/GradientButton';
+import GhostButton from './ui/GhostButton';
+
+const backgroundLabels: { [key: string]: string } = {
+  developer: 'Developer',
+  student: 'Student',
+  sysadmin: 'System Admin',
+  beginner: 'Complete Beginner',
+};
+
+const packLabels: { [key: string]: string } = {
+  linux: 'Linux',
+  git: 'Git',
+  docker: 'Docker',
+  networking: 'Network',
+};
 
 interface HomeProps {
-  userProfile: {
-    background: string;
-    selectedPacks: string[];
-    isLoggedIn: boolean;
-  } | null;
-  onNavigate: (screen: 'home' | 'learn' | 'test') => void;
+  background?: string;
+  selectedPacks?: string[];
 }
 
-const Home: React.FC<HomeProps> = ({ userProfile, onNavigate }) => {
-  const backgroundLabels: { [key: string]: string } = {
-    developer: 'Developer',
-    student: 'Student',
-    sysadmin: 'System Admin',
-    beginner: 'Complete Beginner',
-  };
-
-  const packLabels: { [key: string]: string } = {
-    linux: 'Linux Commands',
-    git: 'Git Version Control',
-    docker: 'Docker Containers',
-    networking: 'Network Tools',
-  };
-
-  if (!userProfile?.isLoggedIn) {
-    return (
-      <div className="p-6 space-y-8 min-h-full flex flex-col justify-center">
-        {/* Welcome Section */}
-        <div className="text-center space-y-4">
-          <div className="w-20 h-20 bg-green-900/20 rounded-full flex items-center justify-center mx-auto">
-            <User className="w-10 h-10 text-green-400" />
+const Home: React.FC<HomeProps> = ({ background = '', selectedPacks = [] }) => {
+  return (
+    <div className="px-6 space-y-8">
+      <SignedOut>
+        <section className="text-center space-y-5 pt-6">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-surface-container-low flex items-center justify-center">
+            <Icon name="terminal" className="text-primary text-4xl" />
           </div>
-          <h2 className="text-2xl font-bold text-green-400">Welcome to CmdWiz</h2>
-          <p className="text-gray-300 text-sm leading-relaxed">
-            Master command-line tools through interactive learning
-          </p>
-        </div>
+          <div className="space-y-2">
+            <h2 className="font-headline font-bold text-3xl text-on-surface tracking-tight">
+              Welcome to CmdWiz
+            </h2>
+            <p className="text-on-surface-variant text-sm leading-relaxed">
+              Master command-line tools through interactive learning.
+            </p>
+          </div>
+        </section>
 
-        {/* Auth Prompt */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-center space-y-4">
-          <Trophy className="w-12 h-12 text-yellow-400 mx-auto" />
-          <h3 className="text-lg font-semibold text-green-300">
-            Join Contests & Track Progress
+        <section className="bg-surface-container-low rounded-2xl p-6 space-y-5 relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+                <Icon name="trophy" filled className="text-xl" />
+              </div>
+              <h3 className="font-headline font-bold text-lg text-on-surface">
+                Join contests &amp; track progress
+              </h3>
+            </div>
+            <p className="text-on-surface-variant text-sm leading-relaxed">
+              Sign up to participate in coding contests, track your learning progress, and
+              compete with developers worldwide.
+            </p>
+            <div className="space-y-3 pt-2">
+              <SignUpButton mode="modal">
+                <GradientButton className="w-full">
+                  <span className="flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
+                    <Icon name="person_add" className="text-base" />
+                    Sign up now
+                  </span>
+                </GradientButton>
+              </SignUpButton>
+              <SignInButton mode="modal">
+                <GhostButton className="w-full">
+                  <span className="flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
+                    <Icon name="login" className="text-base" />
+                    Login
+                  </span>
+                </GhostButton>
+              </SignInButton>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-3">
+          <h3 className="font-headline text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            Start learning
           </h3>
-          <p className="text-gray-300 text-sm">
-            Sign up to participate in coding contests, track your learning progress, and compete with other developers
-          </p>
-          
-          <div className="space-y-3 pt-4">
-            <button className="w-full bg-green-600 hover:bg-green-500 text-black font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
-              <UserPlus className="w-5 h-5" />
-              <span>Sign Up Now</span>
-            </button>
-            
-            <button className="w-full border border-green-600 text-green-400 hover:bg-green-900/20 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
-              <LogIn className="w-5 h-5" />
-              <span>Login</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-green-300">Start Learning</h3>
           <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => onNavigate('learn')}
-              className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg border border-gray-600 transition-colors duration-200 text-center"
+            <Link
+              href="/learn/swipe"
+              className="p-5 bg-surface-container-low rounded-xl text-center hover:bg-surface-container transition-colors"
             >
-              <BookOpen className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-              <span className="text-sm font-medium text-gray-200">Learn Commands</span>
-            </button>
-            
-            <button
-              onClick={() => onNavigate('test')}
-              className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg border border-gray-600 transition-colors duration-200 text-center"
+              <Icon name="school" className="text-secondary text-3xl mb-2" />
+              <p className="text-sm font-headline font-bold text-on-surface">Learn</p>
+            </Link>
+            <Link
+              href="/learn/test"
+              className="p-5 bg-surface-container-low rounded-xl text-center hover:bg-surface-container transition-colors"
             >
-              <Target className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-              <span className="text-sm font-medium text-gray-200">Take Tests</span>
-            </button>
+              <Icon name="quiz" className="text-tertiary text-3xl mb-2" />
+              <p className="text-sm font-headline font-bold text-on-surface">Test</p>
+            </Link>
           </div>
-        </div>
-      </div>
-    );
-  }
+        </section>
+      </SignedOut>
+
+      <SignedIn>
+        <SignedInHome background={background} selectedPacks={selectedPacks} />
+      </SignedIn>
+    </div>
+  );
+};
+
+const SignedInHome: React.FC<HomeProps> = ({ background, selectedPacks }) => {
+  const { user } = useUser();
+  const firstName = user?.firstName || user?.username || 'Operator';
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Profile Header */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="w-16 h-16 bg-green-900/20 rounded-full flex items-center justify-center">
-            <User className="w-8 h-8 text-green-400" />
+    <div className="space-y-6">
+      <section className="bg-surface-container-low rounded-2xl p-6 relative overflow-hidden">
+        <div className="absolute -top-6 -right-6 w-32 h-32 bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <Icon name="terminal" className="text-primary text-2xl" filled />
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-green-400">Welcome back!</h2>
-            <p className="text-gray-300 text-sm">
-              {userProfile.background ? backgroundLabels[userProfile.background] : 'CLI Learner'}
+          <div className="flex-1">
+            <p className="text-xs uppercase tracking-widest text-on-surface-variant font-bold">
+              Welcome back
+            </p>
+            <h2 className="font-headline font-bold text-xl text-on-surface tracking-tight">
+              {firstName}
+            </h2>
+            <p className="text-xs text-secondary mt-0.5">
+              {background ? backgroundLabels[background] || 'CLI Learner' : 'CLI Learner'}
             </p>
           </div>
         </div>
 
-        {/* Selected Packs */}
-        {userProfile.selectedPacks.length > 0 && (
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-green-300">Your Command Packs</h3>
+        {selectedPacks && selectedPacks.length > 0 && (
+          <div className="mt-5 space-y-2 relative">
+            <h3 className="font-headline text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+              Your packs
+            </h3>
             <div className="flex flex-wrap gap-2">
-              {userProfile.selectedPacks.map((packId) => (
+              {selectedPacks.map((id) => (
                 <span
-                  key={packId}
-                  className="px-3 py-1 bg-green-900/20 border border-green-600 rounded-full text-xs text-green-300"
+                  key={id}
+                  className="text-[11px] font-bold px-3 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20"
                 >
-                  {packLabels[packId] || packId}
+                  {packLabels[id] || id}
                 </span>
               ))}
             </div>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 text-center">
-          <div className="text-2xl font-bold text-green-400 mb-1">0</div>
-          <div className="text-xs text-gray-400">Commands Learned</div>
+      <section className="grid grid-cols-2 gap-3">
+        <div className="bg-surface-container-low rounded-xl p-4 text-center">
+          <p className="font-headline font-bold text-2xl text-primary">0</p>
+          <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1">
+            Commands learned
+          </p>
         </div>
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 text-center">
-          <div className="text-2xl font-bold text-yellow-400 mb-1">0</div>
-          <div className="text-xs text-gray-400">Tests Completed</div>
+        <div className="bg-surface-container-low rounded-xl p-4 text-center">
+          <p className="font-headline font-bold text-2xl text-secondary">0</p>
+          <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1">
+            Tests completed
+          </p>
         </div>
-      </div>
+      </section>
 
-      {/* Quick Actions */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-green-300">Continue Learning</h3>
+      <section className="space-y-3">
+        <h3 className="font-headline text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant">
+          Continue learning
+        </h3>
         <div className="space-y-3">
-          <button
-            onClick={() => onNavigate('learn')}
-            className="w-full p-4 bg-blue-900/20 hover:bg-blue-900/30 border border-blue-600 rounded-lg transition-colors duration-200 flex items-center space-x-4"
+          <Link
+            href="/learn/swipe"
+            className="w-full p-4 bg-surface-container-low rounded-xl flex items-center gap-4 hover:bg-surface-container transition-colors"
           >
-            <BookOpen className="w-8 h-8 text-blue-400" />
-            <div className="flex-1 text-left">
-              <h4 className="font-semibold text-blue-300">Learn Commands</h4>
-              <p className="text-xs text-gray-400">Swipe through command cards</p>
+            <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+              <Icon name="school" filled className="text-2xl" />
             </div>
-          </button>
-          
-          <button
-            onClick={() => onNavigate('test')}
-            className="w-full p-4 bg-purple-900/20 hover:bg-purple-900/30 border border-purple-600 rounded-lg transition-colors duration-200 flex items-center space-x-4"
+            <div className="flex-1">
+              <h4 className="font-headline font-bold text-on-surface">Swipe Cards</h4>
+              <p className="text-xs text-on-surface-variant">Discover commands one at a time</p>
+            </div>
+            <Icon name="chevron_right" className="text-on-surface-variant" />
+          </Link>
+          <Link
+            href="/learn/test"
+            className="w-full p-4 bg-surface-container-low rounded-xl flex items-center gap-4 hover:bg-surface-container transition-colors"
           >
-            <Target className="w-8 h-8 text-purple-400" />
-            <div className="flex-1 text-left">
-              <h4 className="font-semibold text-purple-300">Take Tests</h4>
-              <p className="text-xs text-gray-400">Test your knowledge</p>
+            <div className="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+              <Icon name="quiz" className="text-2xl" />
             </div>
-          </button>
+            <div className="flex-1">
+              <h4 className="font-headline font-bold text-on-surface">Test Mode</h4>
+              <p className="text-xs text-on-surface-variant">Real-world CLI scenarios</p>
+            </div>
+            <Icon name="chevron_right" className="text-on-surface-variant" />
+          </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Contests Section */}
-      <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 rounded-lg p-4 border border-yellow-600">
-        <div className="flex items-center space-x-3 mb-3">
-          <Trophy className="w-6 h-6 text-yellow-400" />
-          <h3 className="font-semibold text-yellow-300">Upcoming Contests</h3>
+      <section className="bg-surface-container-high rounded-2xl p-5 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+          <Icon name="trophy" className="text-6xl" />
         </div>
-        <p className="text-gray-300 text-sm mb-3">
-          Join weekly CLI challenges and compete with developers worldwide
-        </p>
-        <button className="bg-yellow-600 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-lg text-sm transition-colors duration-200">
-          View Contests
-        </button>
-      </div>
+        <div className="relative space-y-3">
+          <div className="flex items-center gap-2">
+            <Icon name="trophy" filled className="text-primary text-xl" />
+            <h3 className="font-headline font-bold text-on-surface">Upcoming contests</h3>
+          </div>
+          <p className="text-on-surface-variant text-sm leading-relaxed max-w-[80%]">
+            Join weekly CLI challenges and compete with developers worldwide.
+          </p>
+          <GradientButton className="text-xs uppercase tracking-widest px-5 py-2.5">
+            View Contests
+          </GradientButton>
+        </div>
+      </section>
     </div>
   );
 };

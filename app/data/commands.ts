@@ -1,51 +1,253 @@
-export interface Command {
-  id: string;
-  command: string;
-  description: string;
-  example: string;
-  category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-}
+import type { Command } from '../types';
 
 export const commands: Command[] = [
   {
-    id: '1',
-    command: 'ls -la',
-    description: 'List all files and directories in the current location with detailed information, including hidden files.',
-    example: 'ls -la /home/user',
-    category: 'Linux',
-    difficulty: 'beginner'
-  },
-  {
-    id: '2',
-    command: 'git status',
-    description: 'Show the working tree status, displaying changes that are staged, unstaged, or untracked.',
-    example: 'git status',
+    id: 'git-commit',
+    name: 'Git Commit',
+    command: 'git commit -m "initial commit"',
+    description:
+      'Records changes to the repository by creating a snapshot of the current staged changes.',
+    syntax: 'git commit [options]',
+    commonUse: 'git commit -a -m "message"',
     category: 'Git',
-    difficulty: 'beginner'
+    tags: ['Version Control'],
+    recipes: [
+      {
+        label: 'Quick Commit Staged',
+        code: 'git commit -m "feat: add login flow"',
+        explanation: 'Commits everything currently staged with a single-line message.',
+      },
+      {
+        label: 'Auto-Stage and Commit',
+        code: 'git commit -a -m "fix: typo in README"',
+        explanation: 'Stages every tracked file and commits in one step (skips new untracked files).',
+      },
+    ],
+    docLink: 'https://git-scm.com/docs/git-commit',
+    executionTime: '0.5s',
+    difficulty: 'beginner',
+    xpReward: 10,
   },
   {
-    id: '3',
-    command: 'docker ps -a',
-    description: 'List all containers, both running and stopped, with their status and basic information.',
-    example: 'docker ps -a',
+    id: 'git-force-with-lease',
+    name: 'Force Push with Lease',
+    command: 'git push --force-with-lease',
+    description:
+      'Force-updates the remote branch only if no one else has pushed to it since you last fetched.',
+    syntax: 'git push --force-with-lease [<remote>] [<branch>]',
+    commonUse: 'git push --force-with-lease origin feature/auth',
+    category: 'Git',
+    tags: ['Version Control'],
+    recipes: [
+      {
+        label: 'Safer Force Push',
+        code: 'git push --force-with-lease origin main',
+        explanation: 'Refuses to overwrite the remote if it advanced beyond your local view.',
+      },
+    ],
+    docLink: 'https://git-scm.com/docs/git-push',
+    executionTime: '0.5s',
+    difficulty: 'intermediate',
+    xpReward: 20,
+  },
+  {
+    id: 'docker-run',
+    name: 'docker run',
+    command: 'docker run [OPTIONS] IMAGE [COMMAND] [ARG...]',
+    description:
+      'Creates a writeable container layer over the specified image and starts it using the specified command.',
+    syntax: 'docker run [OPTIONS] IMAGE [COMMAND] [ARG...]',
+    commonUse: 'docker run -d -p 80:80 nginx',
     category: 'Docker',
-    difficulty: 'intermediate'
+    tags: ['Containerization'],
+    recipes: [
+      {
+        label: 'Detached Web Server',
+        code: 'docker run -d -p 80:80 --name webserver nginx',
+        explanation: 'Runs Nginx in the background (-d), maps local port 80 to container port 80.',
+      },
+      {
+        label: 'Interactive Shell',
+        code: 'docker run -it --rm ubuntu /bin/bash',
+        explanation: 'Launches an interactive Ubuntu shell and removes the container upon exit (--rm).',
+      },
+    ],
+    docLink: 'https://docs.docker.com/engine/reference/commandline/run/',
+    executionTime: '1.2s',
+    difficulty: 'intermediate',
+    xpReward: 25,
   },
   {
-    id: '4',
-    command: 'chmod 755 filename',
-    description: 'Change file permissions to allow owner full access (read, write, execute) and others read and execute access.',
-    example: 'chmod 755 script.sh',
+    id: 'docker-volume-prune',
+    name: 'Prune Unused Volumes',
+    command: 'docker volume prune -f',
+    description: 'Removes all unused local volumes to reclaim disk space.',
+    syntax: 'docker volume prune [OPTIONS]',
+    commonUse: 'docker volume prune -f',
+    category: 'Docker',
+    tags: ['Clean Up'],
+    recipes: [
+      {
+        label: 'Force Prune',
+        code: 'docker volume prune -f',
+        explanation: 'Skips the confirmation prompt — use carefully on shared machines.',
+      },
+    ],
+    docLink: 'https://docs.docker.com/engine/reference/commandline/volume_prune/',
+    executionTime: '0.3s',
+    difficulty: 'beginner',
+    xpReward: 10,
+  },
+  {
+    id: 'ls-la',
+    name: 'List All Files',
+    command: 'ls -la',
+    description:
+      'Lists all files and directories in the current location with detailed information, including hidden files.',
+    syntax: 'ls [OPTIONS] [FILE]',
+    commonUse: 'ls -la /home/user',
     category: 'Linux',
-    difficulty: 'intermediate'
+    tags: ['Filesystem'],
+    recipes: [
+      {
+        label: 'Long Listing',
+        code: 'ls -la',
+        explanation: 'Shows permissions, owner, size, and modification date for every entry.',
+      },
+      {
+        label: 'Sort by Time',
+        code: 'ls -lat',
+        explanation: 'Sorts the long listing by modification time, newest first.',
+      },
+    ],
+    docLink: 'https://man7.org/linux/man-pages/man1/ls.1.html',
+    executionTime: '0.1s',
+    difficulty: 'beginner',
+    xpReward: 5,
   },
   {
-    id: '5',
+    id: 'chmod-755',
+    name: 'Change Permissions',
+    command: 'chmod 755 filename',
+    description:
+      'Changes file permissions: owner gets full access (read/write/execute), group and others get read and execute.',
+    syntax: 'chmod [OPTIONS] MODE FILE',
+    commonUse: 'chmod 755 script.sh',
+    category: 'Linux',
+    tags: ['Permissions'],
+    recipes: [
+      {
+        label: 'Make Script Executable',
+        code: 'chmod +x deploy.sh',
+        explanation: 'Adds the execute bit for all permission classes.',
+      },
+      {
+        label: 'Recursive Permissions',
+        code: 'chmod -R 644 ./public',
+        explanation: 'Applies the mode to every file under the directory.',
+      },
+    ],
+    docLink: 'https://man7.org/linux/man-pages/man1/chmod.1.html',
+    executionTime: '0.1s',
+    difficulty: 'intermediate',
+    xpReward: 15,
+  },
+  {
+    id: 'tail-follow',
+    name: 'Tail Follow',
+    command: 'tail -f /var/log/syslog',
+    description:
+      'Outputs the last lines of a file and continues to print appended lines as they arrive in real time.',
+    syntax: 'tail [OPTIONS] FILE',
+    commonUse: 'tail -f /var/log/syslog',
+    category: 'Linux',
+    tags: ['Logs'],
+    recipes: [
+      {
+        label: 'Follow Log',
+        code: 'tail -f /var/log/syslog',
+        explanation: 'Keeps the terminal attached to the file and streams new entries.',
+      },
+      {
+        label: 'Last 100 Lines',
+        code: 'tail -n 100 access.log',
+        explanation: 'Prints exactly the last 100 lines and exits.',
+      },
+    ],
+    docLink: 'https://man7.org/linux/man-pages/man1/tail.1.html',
+    executionTime: '0.1s',
+    difficulty: 'beginner',
+    xpReward: 10,
+  },
+  {
+    id: 'grep-recursive',
+    name: 'Recursive Text Search',
+    command: "grep -rnw './' -e 'TODO'",
+    description: 'Recursively searches the current directory for whole-word matches of a pattern.',
+    syntax: 'grep [OPTIONS] PATTERN [FILE...]',
+    commonUse: "grep -rnw './' -e 'TODO'",
+    category: 'Bash',
+    tags: ['Search'],
+    recipes: [
+      {
+        label: 'Find TODOs',
+        code: "grep -rnw './' -e 'TODO'",
+        explanation: 'Recursively (-r) prints line numbers (-n) for whole-word (-w) matches of TODO.',
+      },
+    ],
+    docLink: 'https://man7.org/linux/man-pages/man1/grep.1.html',
+    executionTime: '0.4s',
+    difficulty: 'intermediate',
+    xpReward: 15,
+  },
+  {
+    id: 'netstat-tuln',
+    name: 'List Listening Ports',
     command: 'netstat -tuln',
-    description: 'Display all listening ports and established connections, showing TCP and UDP protocols with numerical addresses.',
-    example: 'netstat -tuln',
+    description:
+      'Displays all listening TCP and UDP ports with numerical addresses, no DNS lookups.',
+    syntax: 'netstat [OPTIONS]',
+    commonUse: 'netstat -tuln',
     category: 'Network',
-    difficulty: 'advanced'
-  }
+    tags: ['Diagnostics'],
+    recipes: [
+      {
+        label: 'Listening Ports',
+        code: 'netstat -tuln',
+        explanation: 'Lists every TCP/UDP socket in LISTEN state with numeric ports.',
+      },
+    ],
+    docLink: 'https://man7.org/linux/man-pages/man8/netstat.8.html',
+    executionTime: '0.2s',
+    difficulty: 'advanced',
+    xpReward: 25,
+  },
+  {
+    id: 'kubectl-pods',
+    name: 'List Pods',
+    command: 'kubectl get pods -A',
+    description: 'Lists all pods across every namespace in the current Kubernetes cluster.',
+    syntax: 'kubectl get [resource] [flags]',
+    commonUse: 'kubectl get pods -A',
+    category: 'Kubernetes',
+    tags: ['Cluster'],
+    recipes: [
+      {
+        label: 'All Namespaces',
+        code: 'kubectl get pods -A',
+        explanation: 'Quick view of every pod, namespace, status, and age in the cluster.',
+      },
+      {
+        label: 'Wide Output',
+        code: 'kubectl get pods -A -o wide',
+        explanation: 'Adds node, IP, and other context columns to the listing.',
+      },
+    ],
+    docLink: 'https://kubernetes.io/docs/reference/kubectl/',
+    executionTime: '0.6s',
+    difficulty: 'advanced',
+    xpReward: 30,
+  },
 ];
+
+export const getCommandById = (id: string) => commands.find((c) => c.id === id);
